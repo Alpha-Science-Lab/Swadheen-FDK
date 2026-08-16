@@ -22,23 +22,27 @@ endif
 #                              Toolchain Configuration
 # ==============================================================================
 
-CC          := riscv32-unknown-elf-gcc
-OBJCOPY     := riscv32-unknown-elf-objcopy
-OBJDUMP     := riscv32-unknown-elf-objdump
+CC           = riscv32-unknown-elf-gcc
+OBJCOPY      = riscv32-unknown-elf-objcopy
+OBJDUMP      = riscv32-unknown-elf-objdump
+PYTHON       = python3
 
 
 # ==============================================================================
 #                              Build Configuration
 # ==============================================================================
 
-BOOTLOADER  ?= bootloader
-M_EXT       ?= 0
+BOOTLOADER   ?= bootloader
+M_EXT        ?= 0
+FIRMWARE     ?= running_led
+TTYPORT      ?= /dev/ttyUSB1
+BAUD         ?= 115200
 
-EXAMPLES    := examples
-STD_LIB_DIR := std
-C_DIR       := $(EXAMPLES)/c
-ASM_DIR     := $(EXAMPLES)/asm
-BUILD_DIR   := build
+EXAMPLES     = examples
+STD_LIB_DIR  = std
+C_DIR        = $(EXAMPLES)/c
+ASM_DIR      = $(EXAMPLES)/asm
+BUILD_DIR    = build
 
 
 # ==============================================================================
@@ -46,12 +50,12 @@ BUILD_DIR   := build
 # ==============================================================================
 
 ifeq ($(M_EXT),1)
-    # M extension support
-    RISCV_ARCH := -march=rv32im_zicsr_zifencei -mabi=ilp32
+# M extension support
+RISCV_ARCH   = -march=rv32im_zicsr_zifencei -mabi=ilp32
 
 else
-    # M extension ignored 
-    RISCV_ARCH := -march=rv32i_zicsr_zifencei -mabi=ilp32
+# M extension ignored 
+RISCV_ARCH   = -march=rv32i_zicsr_zifencei -mabi=ilp32
 
 endif
 
@@ -71,8 +75,8 @@ clean:
 # ==============================================================================
 
 # Discover all assembly examples
-ASM_EXAMPLES      := $(wildcard $(ASM_DIR)/*.s)
-ASM_EXAMPLE_NAMES := $(patsubst $(ASM_DIR)/%.s,$(ASM_DIR)/%,$(ASM_EXAMPLES))
+ASM_EXAMPLES      = $(wildcard $(ASM_DIR)/*.s)
+ASM_EXAMPLE_NAMES = $(patsubst $(ASM_DIR)/%.s,$(ASM_DIR)/%,$(ASM_EXAMPLES))
 
 
 # ------------------------------------------------------------------------------
@@ -138,8 +142,8 @@ $(ASM_EXAMPLE_NAMES): $(ASM_DIR)/%: \
 # ==============================================================================
 
 # Discover all C examples.
-C_EXAMPLES      := $(wildcard $(C_DIR)/*.c)
-C_EXAMPLE_NAMES := $(patsubst $(C_DIR)/%.c,$(C_DIR)/%,$(C_EXAMPLES))
+C_EXAMPLES      = $(wildcard $(C_DIR)/*.c)
+C_EXAMPLE_NAMES = $(patsubst $(C_DIR)/%.c,$(C_DIR)/%,$(C_EXAMPLES))
 
 
 # ==============================================================================
@@ -147,10 +151,10 @@ C_EXAMPLE_NAMES := $(patsubst $(C_DIR)/%.c,$(C_DIR)/%,$(C_EXAMPLES))
 # ==============================================================================
 
 # Discover standard library source files.
-C_LIB_SRC := $(wildcard $(STD_LIB_DIR)/src/*.c)
+C_LIB_SRC = $(wildcard $(STD_LIB_DIR)/src/*.c)
 
 # Map source files to object files in the build directory.
-C_LIB_OBJ := $(patsubst \
+C_LIB_OBJ = $(patsubst \
 	$(STD_LIB_DIR)/src/%.c,\
 	$(BUILD_DIR)/$(STD_LIB_DIR)/%.o,\
 	$(C_LIB_SRC))
@@ -274,4 +278,15 @@ $(C_EXAMPLE_NAMES): $(C_DIR)/%: \
 	$(BUILD_DIR)/$(C_DIR)/%/out.hex \
 	$(BUILD_DIR)/$(C_DIR)/%/init.mem	
 	@echo "Done!"
+
+
+# ------------------------------------------------------------------------------
+# Firmware Update Over UART
+# ------------------------------------------------------------------------------
+
+.PHONY: fw_upd
+
+fw_upd: $(BUILD_DIR)/$(C_DIR)/$(FIRMWARE)/out.hex
+	@ $(PYTHON) fw_upd.py $(TTYPORT) $(BAUD) \
+		$(BUILD_DIR)/$(C_DIR)/$(FIRMWARE)/out.hex
 
