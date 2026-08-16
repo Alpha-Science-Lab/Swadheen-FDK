@@ -3,6 +3,10 @@
  * SPDX-License-Identifier: MIT
  * ---------------------------------------------------------------------
  * File: peripherals.h
+ *
+ * Modified Md. Mosharrof Hossain
+ * Organization: Alpha Science Lab 
+ * August 2026
  */
 
 
