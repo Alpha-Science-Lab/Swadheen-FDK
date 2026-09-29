@@ -398,21 +398,25 @@ static void process_command(char command)
     {
         case 'F':
         case 'f':
+            *LEDS_ADDRESS = 0x02;
             motor_forward();
             break;
 
         case 'B':
         case 'b':
+            *LEDS_ADDRESS = 0x04;
             motor_backward();
             break;
 
         case 'L':
         case 'l':
+            *LEDS_ADDRESS = 0x10;
             motor_left();
             break;
 
         case 'R':
         case 'r':
+            *LEDS_ADDRESS = 0x20;
             motor_right();
             break;
 
@@ -420,6 +424,7 @@ static void process_command(char command)
         case 'h':
         case 'S':
         case 's':
+            *LEDS_ADDRESS = 0x08;
             motor_stop();
             break;
 
@@ -463,7 +468,7 @@ int main(void)
     uart_write_string("Initializing PWM...\r\n");
     pwm_init();
 
-    /* Make sure the car starts stopped */
+    /* Start safely in STOP mode, waiting for Bluetooth commands */
     motor_stop();
 
     uart_write_string("SPEED = ");
@@ -481,12 +486,15 @@ int main(void)
     uart_write_string("  - = Slow down\r\n");
     uart_write_string("\r\n");
     uart_write_string("RC CAR READY\r\n");
+    *LEDS_ADDRESS = 0x01; // LED 0 ON: Ready & waiting for BT
 
-    /* Main Bluetooth command loop */
+    /* Main command loop (Arduino Serial Monitor / Bluetooth) */
     while (1)
     {
         char command = uart_read_char();
-
+        uart_write_string("RECV: '");
+        uart_write_char(command);
+        uart_write_string("'\r\n");
         process_command(command);
     }
 
