@@ -10,13 +10,6 @@
  */
 
 
-
-// ------------------------------------------------------------------------------------------------
-// |                                                                                              |
-// | This file contains memory addresses and bit indices of the peripheral                        |
-// |                                                                                              |
-// ------------------------------------------------------------------------------------------------
-
 #ifndef _PERIPHERALS_H
 #define _PERIPHERALS_H
 
@@ -35,6 +28,11 @@
 #define UART_BUFFER_ADDRESS           (((volatile uint8_t  *) ((0x00084000    ) << 2)) + 0)
 #define UART_RX_STATUS_ADDRESS        (((volatile uint8_t  *) ((0x00084000    ) << 2)) + 2)
 #define UART_TX_STATUS_ADDRESS        (((volatile uint8_t  *) ((0x00084000    ) << 2)) + 3)
+
+#define UART1_ADDRESS                 (((volatile uint32_t *) ((0x00084100    ) << 2)))
+#define UART1_BUFFER_ADDRESS          (((volatile uint8_t  *) ((0x00084100    ) << 2)) + 0)
+#define UART1_RX_STATUS_ADDRESS       (((volatile uint8_t  *) ((0x00084100    ) << 2)) + 2)
+#define UART1_TX_STATUS_ADDRESS       (((volatile uint8_t  *) ((0x00084100    ) << 2)) + 3)
 
 #define TIMER_STATUS_ADDRESS          (((volatile uint32_t *) ((0x00085000    ) << 2)))
 #define TIMER_MTIME_ADDRESS           (((volatile uint32_t *) ((0x00085000 + 1) << 2)))
@@ -76,7 +74,7 @@
 #define SPI_CS_ADDRESS                (((volatile uint32_t *) ((0x00085400 + 4) << 2)))
 
 // GPIO ADDRESSES
-#define GPIO_ADDRESS                  (((volatile uint32_t *) ((0x00085600      ) << 2)))
+#define GPIO_ADDRESS                  (((volatile uint32_t *) ((0x00085600    ) << 2)))
 
 // GPIO PORT A
 #define GPIOA_DATA_ADDRESS            (((volatile uint32_t *) ((0x00085600 + 0x00) << 2)))
